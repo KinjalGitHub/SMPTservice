@@ -1,6 +1,6 @@
 ﻿namespace SMPTservice.Models
 {
-    public class SendMail
+    public class SendMails
     {
         public string fromEmailAddress { get; set; }
 
