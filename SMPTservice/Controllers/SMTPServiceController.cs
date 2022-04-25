@@ -1,18 +1,16 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-
+using SMPTservice.Models;
 namespace SMPTservice.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class SMTPServiceController : ControllerBase
     {
-        [Route("SendMail")]
-        [HttpGet]
-        public bool sendMail()
-        { 
-            return false;
+        [HttpPost("sendmail")]
+        public SendMail sendMail([FromBody] SendMail mail)
+        {
+            return mail;
         }
-
     }
 }

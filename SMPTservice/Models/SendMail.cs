@@ -12,7 +12,5 @@
         public string mailBody { get; set; }
 
         public List<string> lstFilesToAttachPaths { get; set; }
-
-
     }
 }
