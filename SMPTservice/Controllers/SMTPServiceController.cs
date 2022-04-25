@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SMPTservice.Models;
+using SMPTservice.Service;
 namespace SMPTservice.Controllers
 {
     [Route("api/[controller]")]
@@ -8,9 +9,10 @@ namespace SMPTservice.Controllers
     public class SMTPServiceController : ControllerBase
     {
         [HttpPost("sendmail")]
-        public SendMail sendMail([FromBody] SendMail mail)
+        public bool sendMail([FromBody] SendMails mail)
         {
-            return mail;
+            SMTPService service = new SMTPService();    
+            return service.IsMailSent(mail);
         }
     }
 }
