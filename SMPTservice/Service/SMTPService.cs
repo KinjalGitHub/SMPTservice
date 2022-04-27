@@ -61,12 +61,12 @@ namespace SMPTservice.Service
             foreach (var trNode in htmlNodes)
             {
                 HtmlNode firstChild = trNode.FirstChild;
-                if (firstChild.InnerHtml == "Deleted")
+                if (firstChild.InnerHtml.Equals(Enum.GetName(typeof(ActionPerformed), ActionPerformed.Deleted)))
                 {
                     trNode.Attributes.Add("style", "color:red");
                 }
-                
-                if (firstChild.InnerHtml == "Modified")
+
+                if (firstChild.InnerHtml.Equals(Enum.GetName(typeof(ActionPerformed), ActionPerformed.Modified)))
                 {
                     trNode.Attributes.Add("style", "color:green");
                 }
