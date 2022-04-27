@@ -16,6 +16,7 @@ namespace SMPTservice.Service
             MailSettings.DomainUserName = Configuration.GetSection("MailSettings")["DomainUserName"];
             MailSettings.DomainPassword = Configuration.GetSection("MailSettings")["DomainPassword"];
             MailSettings.SMTPServerName = Configuration.GetSection("MailSettings")["SMTPServerName"];
+            MailSettings.Port = Convert.ToInt32(Configuration.GetSection("MailSettings")["Port"]);
         }
     }
 }
