@@ -9,7 +9,7 @@ namespace SMPTservice.Controllers
     public class SMTPServiceController : ControllerBase
     {
         [HttpPost("sendmail")]
-        public bool sendMail([FromBody] SendMails mail)
+        public bool sendMail([FromBody] SendMail mail)
         {
             SMTPService service = new SMTPService();    
             return service.IsMailSent(mail);

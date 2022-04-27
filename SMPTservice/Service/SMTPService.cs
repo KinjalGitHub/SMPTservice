@@ -1,48 +1,46 @@
-﻿using SMPTservice.Models;
-using SMPTservice.Controllers;
-using SMPTservice.Service;
-using System.Diagnostics;
-using MimeKit;
-using MailKit.Net.Smtp;
-using HtmlAgilityPack;
+﻿using HtmlAgilityPack;
+using SMPTservice.Models;
+using System.Net.Mail;
+
 namespace SMPTservice.Service
 {
     public class SMTPService
     {
-        public bool IsMailSent(SendMails mail)
+        public bool IsMailSent(SendMail mail)
         {
             try
             {
                 ConfigureMailSettings settings = new ConfigureMailSettings();
                 settings.ConfigureServices();
-                System.Net.Mail.SmtpClient smtpClient = new System.Net.Mail.SmtpClient();
+
+                SmtpClient smtpClient = new SmtpClient();
                 smtpClient.Credentials = new System.Net.NetworkCredential(MailSettings.DomainUserName, MailSettings.DomainPassword);
                 smtpClient.Host = MailSettings.SMTPServerName;
                 smtpClient.Port = MailSettings.Port;
                 smtpClient.UseDefaultCredentials = false;
                 smtpClient.EnableSsl = true;
-                if (mail.fromEmailAddress.Trim().Length == 0)
+                if (mail.FromEmailAddress.Trim().Length == 0)
                 {
-                    mail.fromEmailAddress = "DoNotReply@bbd.co.za";
+                    mail.FromEmailAddress = "DoNotReply@bbd.co.za";
                 }
-                if (mail.fromEmailName.Trim().Length == 0)
+                if (mail.FromEmailName.Trim().Length == 0)
                 {
-                    mail.fromEmailName = "Automated Email";
+                    mail.FromEmailName = "Automated Email";
                 }
-                var email = new System.Net.Mail.MailMessage();
-                email.From = new System.Net.Mail.MailAddress(mail.fromEmailAddress, mail.fromEmailName);
-                email.Subject = mail.mailSubject;
-                email.Body = FormatMailBody(mail.mailBody);
+                var email = new MailMessage();
+                email.From = new MailAddress(mail.FromEmailAddress, mail.FromEmailName);
+                email.Subject = mail.MailSubject;
+                email.Body = FormatMailBody(mail.MailBody);
                 email.IsBodyHtml = true;
-                foreach (string emailAdress in mail.lstToEmailAddress.Where(s => string.IsNullOrEmpty(s) == false))
+                foreach (string emailAdress in mail.ToEmailAddresses.Where(s => !string.IsNullOrEmpty(s)))
                 {
                     email.To.Add(emailAdress);
                 }
-                foreach (string fileurl in mail.lstFilesToAttachPaths)
+                foreach (string fileurl in mail.FilesToAttachPaths)
                 {
-                    if (System.IO.File.Exists(fileurl))
+                    if (File.Exists(fileurl))
                     {
-                        email.Attachments.Add(new System.Net.Mail.Attachment(fileurl));
+                        email.Attachments.Add(new Attachment(fileurl));
                     }
                 }
                 smtpClient.Send(email);
