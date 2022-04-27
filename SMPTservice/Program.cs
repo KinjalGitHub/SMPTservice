@@ -1,3 +1,8 @@
+
+using SMPTservice.Models;
+using SMPTservice.Service;
+using System.Net.Mail;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -15,6 +20,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+//ConfigureMailSettings settings = new ConfigureMailSettings();
+ConfigureMailSettings.ConfigureServices();
+ConfigureMailSettings.CreateSmtpClient();
 
 app.UseHttpsRedirection();
 

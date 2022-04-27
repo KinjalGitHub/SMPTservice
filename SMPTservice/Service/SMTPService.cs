@@ -10,15 +10,7 @@ namespace SMPTservice.Service
         {
             try
             {
-                ConfigureMailSettings settings = new ConfigureMailSettings();
-                settings.ConfigureServices();
-
-                SmtpClient smtpClient = new SmtpClient();
-                smtpClient.Credentials = new System.Net.NetworkCredential(MailSettings.DomainUserName, MailSettings.DomainPassword);
-                smtpClient.Host = MailSettings.SMTPServerName;
-                smtpClient.Port = MailSettings.Port;
-                smtpClient.UseDefaultCredentials = false;
-                smtpClient.EnableSsl = true;
+                SmtpClient smtpClient = ConfigureMailSettings.getSmtpClient();
                 if (mail.FromEmailAddress.Trim().Length == 0)
                 {
                     mail.FromEmailAddress = "DoNotReply@bbd.co.za";
@@ -27,11 +19,7 @@ namespace SMPTservice.Service
                 {
                     mail.FromEmailName = "Automated Email";
                 }
-                var email = new MailMessage();
-                email.From = new MailAddress(mail.FromEmailAddress, mail.FromEmailName);
-                email.Subject = mail.MailSubject;
-                email.Body = FormatMailBody(mail.MailBody);
-                email.IsBodyHtml = true;
+                var email = CreateMail(mail);
                 foreach (string emailAdress in mail.ToEmailAddresses.Where(s => !string.IsNullOrEmpty(s)))
                 {
                     email.To.Add(emailAdress);
@@ -50,6 +38,16 @@ namespace SMPTservice.Service
             {
                 return false;
             }
+        }
+
+        public MailMessage CreateMail(SendMail mail)
+        {
+            var email = new MailMessage();
+            email.From = new MailAddress(mail.FromEmailAddress, mail.FromEmailName);
+            email.Subject = mail.MailSubject;
+            email.Body = FormatMailBody(mail.MailBody);
+            email.IsBodyHtml = true;
+            return email;
         }
 
         public string FormatMailBody(string MailBody)
