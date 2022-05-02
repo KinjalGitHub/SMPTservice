@@ -22,8 +22,8 @@ if (app.Environment.IsDevelopment())
 }
 
 //ConfigureMailSettings settings = new ConfigureMailSettings();
-ConfigureMailSettings.ConfigureServices();
-ConfigureMailSettings.CreateSmtpClient();
+//ConfigureMailSettings.ConfigureServices();
+//ConfigureMailSettings.CreateSmtpClient();
 
 app.UseHttpsRedirection();
 

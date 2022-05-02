@@ -10,32 +10,17 @@ namespace SMPTservice.Service
         {
             try
             {
-                SmtpClient smtpClient = ConfigureMailSettings.getSmtpClient();
-                if (mail.FromEmailAddress.Trim().Length == 0)
-                {
-                    mail.FromEmailAddress = "DoNotReply@bbd.co.za";
-                }
-                if (mail.FromEmailName.Trim().Length == 0)
-                {
-                    mail.FromEmailName = "Automated Email";
-                }
+                ConfigureMailSettings mailsetting = ConfigureMailSettings.GetInstance();
+
+                SmtpClient smtpClient = mailsetting.getSmtpClient();
+                
                 var email = CreateMail(mail);
-                foreach (string emailAdress in mail.ToEmailAddresses.Where(s => !string.IsNullOrEmpty(s)))
-                {
-                    email.To.Add(emailAdress);
-                }
-                foreach (string fileurl in mail.FilesToAttachPaths)
-                {
-                    if (File.Exists(fileurl))
-                    {
-                        email.Attachments.Add(new Attachment(fileurl));
-                    }
-                }
                 smtpClient.Send(email);
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                File.WriteAllText(MailSettings.log_path, ex.ToString());
                 return false;
             }
         }
@@ -43,10 +28,26 @@ namespace SMPTservice.Service
         public MailMessage CreateMail(SendMail mail)
         {
             var email = new MailMessage();
+            if (mail.FromEmailAddress.Trim().Length == 0)
+            {
+                mail.FromEmailAddress = "DoNotReply@bbd.co.za";
+            }
+            if (mail.FromEmailName.Trim().Length == 0)
+            {
+                mail.FromEmailName = "Automated Email";
+            }
             email.From = new MailAddress(mail.FromEmailAddress, mail.FromEmailName);
             email.Subject = mail.MailSubject;
             email.Body = FormatMailBody(mail.MailBody);
             email.IsBodyHtml = true;
+
+            foreach (string emailAdress in mail.ToEmailAddresses.Where(s => !string.IsNullOrEmpty(s)))
+                email.To.Add(emailAdress);
+            foreach (string fileurl in mail.FilesToAttachPaths)
+            {
+                if (File.Exists(fileurl))
+                    email.Attachments.Add(new Attachment(fileurl));
+            }
             return email;
         }
 
