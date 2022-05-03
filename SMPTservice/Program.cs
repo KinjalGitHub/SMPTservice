@@ -21,10 +21,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-//ConfigureMailSettings settings = new ConfigureMailSettings();
-//ConfigureMailSettings.ConfigureServices();
-//ConfigureMailSettings.CreateSmtpClient();
-
 app.UseHttpsRedirection();
 
 app.UseAuthorization();

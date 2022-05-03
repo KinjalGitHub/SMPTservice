@@ -8,35 +8,27 @@ namespace SMPTservice.Service
     {
         private static IConfiguration Configuration;
         private static SmtpClient smtpClient;
-
-
         private ConfigureMailSettings()
         {
-
+            Configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
         }
-
-        public static ConfigureMailSettings obj;
+        public static ConfigureMailSettings configureMailSettings;
         public static ConfigureMailSettings GetInstance() 
         {
-            if (obj == null)
+            if (configureMailSettings == null)
             {
-                obj = new ConfigureMailSettings();
+                configureMailSettings = new ConfigureMailSettings();
                 ConfigureServices();
                 CreateSmtpClient();
-
             }
-            return obj;
-
+            return configureMailSettings;
         }
-
         public static void ConfigureServices()
         {
-            Configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
             MailSettings.DomainUserName = Configuration.GetSection("MailSettings")["DomainUserName"];
             MailSettings.DomainPassword = Configuration.GetSection("MailSettings")["DomainPassword"];
             MailSettings.SMTPServerName = Configuration.GetSection("MailSettings")["SMTPServerName"];
-            MailSettings.Port = Convert.ToInt32(Configuration.GetSection("MailSettings")["Port"]);
-            MailSettings.log_path = Configuration.GetSection("MailSettings")["Log_Path"];
+            MailSettings.Log_Path = Configuration.GetSection("MailSettings")["Log_Path"];
         }
 
         public static void CreateSmtpClient()
@@ -44,20 +36,12 @@ namespace SMPTservice.Service
             smtpClient = new SmtpClient();
             smtpClient.Credentials = new System.Net.NetworkCredential(MailSettings.DomainUserName, MailSettings.DomainPassword);
             smtpClient.Host = MailSettings.SMTPServerName;
-            smtpClient.Port = MailSettings.Port;
             smtpClient.UseDefaultCredentials = false;
-            smtpClient.EnableSsl = true;
         }
 
         public  SmtpClient getSmtpClient()
         {
             return smtpClient;
         }
-
-         public string getLog_path()
-        {
-            return MailSettings.log_path;
-        }
-
     }
 }

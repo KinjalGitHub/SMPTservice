@@ -11,16 +11,14 @@ namespace SMPTservice.Service
             try
             {
                 ConfigureMailSettings mailsetting = ConfigureMailSettings.GetInstance();
-
                 SmtpClient smtpClient = mailsetting.getSmtpClient();
-                
                 var email = CreateMail(mail);
                 smtpClient.Send(email);
                 return true;
             }
             catch (Exception ex)
             {
-                File.WriteAllText(MailSettings.log_path, ex.ToString());
+                File.WriteAllText(MailSettings.Log_Path, ex.ToString());
                 return false;
             }
         }
