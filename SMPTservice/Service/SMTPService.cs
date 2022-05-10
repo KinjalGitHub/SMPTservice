@@ -6,19 +6,35 @@ namespace SMPTservice.Service
 {
     public class SMTPService
     {
+        private IConfigureMailSettings _mailSettings;
+        //public SMTPService(IConfigureMailSettings _mailSettings)
+        //{
+        //    this._mailSettings = _mailSettings;
+        //}
+        public SMTPService()
+        {
+            _mailSettings = new ConfigureMailSettings();
+        }
+        public void ConfigureServices()
+        {   
+            _mailSettings.ConfigureServices();
+        }
+        public void CreateSmtpClient()
+        {
+            _mailSettings.CreateSmtpClient();
+        }
         public bool IsMailSent(SendMail mail)
         {
             try
             {
-                ConfigureMailSettings mailsetting = ConfigureMailSettings.GetInstance();
-                SmtpClient smtpClient = mailsetting.getSmtpClient();
+                SmtpClient smtpClient = IConfigureMailSettings.getSmtpClient();
                 var email = CreateMail(mail);
                 smtpClient.Send(email);
                 return true;
             }
             catch (Exception ex)
             {
-                File.WriteAllText(MailSettings.Log_Path, ex.ToString());
+                File.WriteAllText(MailSettings.LogPath, ex.ToString());
                 return false;
             }
         }
@@ -36,7 +52,7 @@ namespace SMPTservice.Service
             }
             email.From = new MailAddress(mail.FromEmailAddress, mail.FromEmailName);
             email.Subject = mail.MailSubject;
-            email.Body = FormatMailBody(mail.MailBody);
+            email.Body = mail.MailBody;
             email.IsBodyHtml = true;
 
             foreach (string emailAdress in mail.ToEmailAddresses.Where(s => !string.IsNullOrEmpty(s)))
@@ -49,27 +65,26 @@ namespace SMPTservice.Service
             return email;
         }
 
-        public string FormatMailBody(string MailBody)
-        {
-            HtmlDocument htmlDoc = new HtmlDocument();
-            htmlDoc.LoadHtml(MailBody);
-            HtmlNodeCollection htmlNodes = htmlDoc.DocumentNode.SelectNodes("//tr");
+        //public string FormatMailBody(string MailBody)
+        //{
+        //    HtmlDocument htmlDoc = new HtmlDocument();
+        //    htmlDoc.LoadHtml(MailBody);
+        //    HtmlNodeCollection htmlNodes = htmlDoc.DocumentNode.SelectNodes("//tr");
             
-            foreach (var trNode in htmlNodes)
-            {
-                HtmlNode firstChild = trNode.FirstChild;
-                if (firstChild.InnerHtml.Equals(Enum.GetName(typeof(ActionPerformed), ActionPerformed.Deleted)))
-                {
-                    trNode.Attributes.Add("style", "color:red");
-                }
-
-                if (firstChild.InnerHtml.Equals(Enum.GetName(typeof(ActionPerformed), ActionPerformed.Modified)))
-                {
-                    trNode.Attributes.Add("style", "color:green");
-                }
-            }
-            return htmlDoc.DocumentNode.OuterHtml;
-        }
+        //    foreach (var trNode in htmlNodes)
+        //    {
+        //        HtmlNode firstChild = trNode.FirstChild;
+        //        if (firstChild.InnerHtml.Equals(Enum.GetName(typeof(ActionPerformed), ActionPerformed.Deleted)))
+        //        {
+        //            trNode.Attributes.Add("style", "color:red");
+        //        }
+        //        else if (firstChild.InnerHtml.Equals(Enum.GetName(typeof(ActionPerformed), ActionPerformed.Modified)))
+        //        {
+        //            trNode.Attributes.Add("style", "color:green");
+        //        }
+        //    }
+        //    return htmlDoc.DocumentNode.OuterHtml;
+        //}
        
     }
 }

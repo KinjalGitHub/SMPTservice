@@ -12,6 +12,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
+SMTPService smtpService = new SMTPService();
+smtpService.ConfigureServices();
+smtpService.CreateSmtpClient();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
