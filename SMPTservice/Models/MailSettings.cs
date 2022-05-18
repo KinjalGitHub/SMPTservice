@@ -1,4 +1,4 @@
-﻿namespace SMPTservice.Models
+﻿namespace SMTPservice.Models
 {
     public static class MailSettings
     {

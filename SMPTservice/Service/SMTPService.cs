@@ -1,40 +1,36 @@
-﻿using HtmlAgilityPack;
-using SMPTservice.Models;
+﻿using Microsoft.Extensions.Logging.Abstractions;
+using SMTPservice.Models;
 using System.Net.Mail;
+using SMTPservice.Controllers;
+using SMTPservice.Interface;
 
-namespace SMPTservice.Service
+namespace SMTPservice.Service
 {
-    public class SMTPService
+    public class SMTPService : ISMTPService
     {
         private IConfigureMailSettings _mailSettings;
-        //public SMTPService(IConfigureMailSettings _mailSettings)
-        //{
-        //    this._mailSettings = _mailSettings;
-        //}
-        public SMTPService()
+
+        private readonly ILogger<SMTPService> _logger;
+        public SMTPService(ILogger<SMTPService> logger,IConfigureMailSettings _mailSettings)
         {
-            _mailSettings = new ConfigureMailSettings();
-        }
-        public void ConfigureServices()
-        {   
+            this._logger = logger;
+            this._mailSettings = _mailSettings;
             _mailSettings.ConfigureServices();
-        }
-        public void CreateSmtpClient()
-        {
             _mailSettings.CreateSmtpClient();
         }
+
         public bool IsMailSent(SendMail mail)
         {
             try
             {
-                SmtpClient smtpClient = IConfigureMailSettings.getSmtpClient();
+                SmtpClient smtpClient = _mailSettings.getSmtpClient();
                 var email = CreateMail(mail);
                 smtpClient.Send(email);
                 return true;
             }
             catch (Exception ex)
             {
-                File.WriteAllText(MailSettings.LogPath, ex.ToString());
+                _logger.LogError(ex.ToString());
                 return false;
             }
         }
@@ -64,27 +60,5 @@ namespace SMPTservice.Service
             }
             return email;
         }
-
-        //public string FormatMailBody(string MailBody)
-        //{
-        //    HtmlDocument htmlDoc = new HtmlDocument();
-        //    htmlDoc.LoadHtml(MailBody);
-        //    HtmlNodeCollection htmlNodes = htmlDoc.DocumentNode.SelectNodes("//tr");
-            
-        //    foreach (var trNode in htmlNodes)
-        //    {
-        //        HtmlNode firstChild = trNode.FirstChild;
-        //        if (firstChild.InnerHtml.Equals(Enum.GetName(typeof(ActionPerformed), ActionPerformed.Deleted)))
-        //        {
-        //            trNode.Attributes.Add("style", "color:red");
-        //        }
-        //        else if (firstChild.InnerHtml.Equals(Enum.GetName(typeof(ActionPerformed), ActionPerformed.Modified)))
-        //        {
-        //            trNode.Attributes.Add("style", "color:green");
-        //        }
-        //    }
-        //    return htmlDoc.DocumentNode.OuterHtml;
-        //}
-       
     }
 }
